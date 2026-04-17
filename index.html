@@ -4,10 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>青鸟善康SCRM</title>
-<script src="https://static.mastergo.com/static/ai/resource/html/tailwind/tailwind.js"></script>
+<script src="https://cdn.tailwindcss.com"></script>
 <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
-<link href="https://static.mastergo.com/static/ai/resource/html/googleapis/css2" rel="stylesheet">
-<link rel="stylesheet" href="https://static.mastergo.com/static/ai/resource/html/font-awesome/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css">
 <script>tailwind.config={theme:{extend:{colors:{primary:'#3B82F6',secondary:'#6B7280'},borderRadius:{'none':'0px','sm':'2px',DEFAULT:'4px','md':'8px','lg':'12px','xl':'16px','2xl':'20px','3xl':'24px','full':'9999px','button':'4px'}}}}</script>
 <style>
 .chart-container {
@@ -209,7 +209,7 @@ background-color: rgba(17, 24, 39, 0.45);
 <div class="grid grid-cols-2 gap-6 mb-8">
 <!-- Time Trend Chart -->
 <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
-<h3 class="text-lg font-semibold text-gray-900 mb-4">近 7 天发送趋势</h3>
+<h3 class="text-lg font-semibold text-gray-900 mb-4">近7天发送趋势</h3>
 <div id="timeChart" class="chart-container"></div>
 </div>
 <!-- Status Funnel Chart -->
@@ -663,7 +663,7 @@ legend: { data: ['计划发送量', '实际触达量'] },
 xAxis: { type: 'category', data: trendRows.map(function(row) { return row.label; }) },
 yAxis: { type: 'value' },
 series: [
-{ name: '计划发送量', type: 'line', data: trendRows.map(function(row) { return row.planned; }), lineStyle: { color: '#3B82F6' } },
+{ name: '计划发送量', type: 'line', data: trendRows.map(function(row) { return row.planned; }), lineStyle: { color: '#3B82F6' }, },
 { name: '实际触达量', type: 'line', data: trendRows.map(function(row) { return row.actual; }), lineStyle: { color: '#10B981' } }
 ]
 });
