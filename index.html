@@ -67,7 +67,7 @@ background-color: rgba(17, 24, 39, 0.45);
 <div class="px-6 py-4">
 <div class="flex items-center justify-between">
 <div class="flex items-center space-x-8">
-<h1 class="text-xl font-semibold text-gray-900">青鸟善康SCRM</h1>
+<h1 class="text-xl font-semibold text-gray-900">青鸟善康<span class="text-red-600">SCRM</span></h1>
 <nav class="flex space-x-6">
 <a id="nav-task" href="#page-task" class="nav-link-active pb-2 px-1 font-medium transition-colors">随访任务</a>
 <a id="nav-stats" href="#page-2" class="nav-link-inactive hover:text-gray-900 pb-2 px-1 font-medium transition-colors">数据统计</a>
@@ -208,7 +208,7 @@ background-color: rgba(17, 24, 39, 0.45);
 <div class="grid grid-cols-2 gap-6 mb-8">
 <!-- Time Trend Chart -->
 <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
-<h3 class="text-lg font-semibold text-gray-900 mb-4">近7天发送趋势</h3>
+<h3 class="text-lg font-semibold text-gray-900 mb-4">近7天任务趋势</h3>
 <div id="timeChart" class="chart-container"></div>
 </div>
 <!-- Status Funnel Chart -->
@@ -342,7 +342,7 @@ dropped: { label: '已脱落', className: 'status-dropped' }
 
 const drugOptions = ['健民生血片', '健脾生血颗粒', '小儿宝泰康', '复方黄柏液', '雌二醇凝胶'];
 const nicknameRoots = ['康康', '安安', '乐乐', '晴晴', '依依', '宁宁', '甜甜', '小满', '小葵', '沐沐', '清清', '心心'];
-const statsStaffs = ['企微_王芸', '企微_李怡', '企微_张媛', '企微_晓燕', '企微_陈星', '企微_赵宁'];
+const statsStaffs = ['王芸星', '高露遥', '张媛媛', '黄晓燕', '陈星雅', '高雪纯'];
 const followupDateRange = { startDay: 1, endDay: 17 };
 const dailyTaskRange = { min: 60, max: 100 };
 const droppedTaskLimit = 13;
@@ -681,7 +681,7 @@ const range = getStatsDateRange();
 const summary = getTaskSummary(getStatsFilteredTasks());
 statusChart.setOption({
 animation: false,
-title: { text: '任务状态转化', subtext: formatStatsRangeLabel(range.startDate, range.endDate), x: 'center' },
+title: { text: '任务转化', subtext: formatStatsRangeLabel(range.startDate, range.endDate), x: 'center' },
 series: [{
 name: '转化率',
 type: 'funnel',
