@@ -681,7 +681,7 @@ const range = getStatsDateRange();
 const summary = getTaskSummary(getStatsFilteredTasks());
 statusChart.setOption({
 animation: false,
-title: { text: '消息状态转化', subtext: formatStatsRangeLabel(range.startDate, range.endDate), x: 'center' },
+title: { text: '任务状态转化', subtext: formatStatsRangeLabel(range.startDate, range.endDate), x: 'center' },
 series: [{
 name: '转化率',
 type: 'funnel',
