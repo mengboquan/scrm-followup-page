@@ -507,8 +507,8 @@ new Array(readCount).fill('read')
 const dailyDrugPool = buildBalancedSequence(drugOptions, dailyCount);
 const dailyStaffPool = buildBalancedSequence(statsStaffs, dailyCount);
 for (let dailyIndex = 0; dailyIndex < dailyCount; dailyIndex += 1) {
-const hour = randomInt(8, 21);
-const minute = randomInt(0, 59);
+const hour = 9;
+const minute = 0;
 const drugName = dailyDrugPool[dailyIndex];
 const courseDay = randomInt(1, 21);
 const nickname = `${pickRandom(nicknameRoots)}${pad(randomInt(1, 99))}`;
