@@ -75,7 +75,7 @@ background-color: rgba(17, 24, 39, 0.45);
 </div>
 <div class="flex items-center space-x-4">
 <div class="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
-<span class="text-white text-sm font-medium">权</span>
+<span class="text-white text-sm font-medium">褚鹏</span>
 </div>
 </div>
 </div>
@@ -101,6 +101,17 @@ background-color: rgba(17, 24, 39, 0.45);
 <option>小儿宝泰康</option>
 <option>复方黄柏液</option>
 <option>雌二醇凝胶</option>
+</select>
+<i class="fas fa-chevron-down absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4 flex items-center justify-center"></i>
+</div>
+<!-- 新增随访消息状态筛选 -->
+<div class="relative">
+<select id="task-status-filter" class="appearance-none bg-white border border-gray-300 rounded-lg pl-3 pr-10 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+<option value="all">全部状态</option>
+<option value="api">API触发</option>
+<option value="sent">已触达</option>
+<option value="read">已学习</option>
+<option value="dropped">已脱落</option>
 </select>
 <i class="fas fa-chevron-down absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4 flex items-center justify-center"></i>
 </div>
@@ -508,7 +519,7 @@ const dailyDrugPool = buildBalancedSequence(drugOptions, dailyCount);
 const dailyStaffPool = buildBalancedSequence(statsStaffs, dailyCount);
 for (let dailyIndex = 0; dailyIndex < dailyCount; dailyIndex += 1) {
 const hour = 9;
-const minute = 0;
+const minute = randomInt(0,1);
 const drugName = dailyDrugPool[dailyIndex];
 const courseDay = randomInt(1, 21);
 const nickname = `${pickRandom(nicknameRoots)}${pad(randomInt(1, 99))}`;
@@ -813,6 +824,7 @@ const apiCountEl = document.getElementById('task-api-count');
 const sentCountEl = document.getElementById('task-sent-count');
 const readCountEl = document.getElementById('task-read-count');
 const droppedCountEl = document.getElementById('task-dropped-count');
+const statusFilter = document.getElementById('task-status-filter'); // 新增状态筛选元素
 
 const statsDetailTableBody = document.getElementById('stats-detail-table-body');
 const statsPaginationInfo = document.getElementById('stats-pagination-info');
@@ -855,15 +867,19 @@ return task.sendTimeValue >= range.startDate && task.sendTimeValue <= range.endD
 }
 
 function getFilteredTasks() {
-const selectedDrug = drugFilter ? drugFilter.value : '全部药品';
-const selectedTime = timeFilter ? timeFilter.value : '';
-const keyword = taskSearchInput ? taskSearchInput.value.trim().toLowerCase() : '';
-return taskList.filter(function(task) {
-const matchesDrug = selectedDrug === '全部药品' || task.drugName === selectedDrug;
-const matchesTime = !selectedTime || task.sendTimeValue === selectedTime;
-const matchesKeyword = !keyword || task.wechatNickname.toLowerCase().includes(keyword) || task.wechatId.toLowerCase().includes(keyword);
-return matchesDrug && matchesTime && matchesKeyword;
-});
+  const selectedDrug = drugFilter ? drugFilter.value : '全部药品';
+  const selectedTime = timeFilter ? timeFilter.value : '';
+  const selectedStatus = statusFilter ? statusFilter.value : 'all'; // 新增状态筛选值
+  const keyword = taskSearchInput ? taskSearchInput.value.trim().toLowerCase() : '';
+  
+  return taskList.filter(function(task) {
+    const matchesDrug = selectedDrug === '全部药品' || task.drugName === selectedDrug;
+    const matchesTime = !selectedTime || task.sendTimeValue === selectedTime;
+    const matchesKeyword = !keyword || task.wechatNickname.toLowerCase().includes(keyword) || task.wechatId.toLowerCase().includes(keyword);
+    const matchesStatus = selectedStatus === 'all' || task.statusKey === selectedStatus; // 新增状态筛选逻辑
+    
+    return matchesDrug && matchesTime && matchesKeyword && matchesStatus;
+  });
 }
 
 function getTaskTotalPages() {
@@ -1077,9 +1093,9 @@ syncSelectionState();
 function markTaskAsSent(task) {
 task.loading = false;
 task.checked = false;
-task.statusKey = 'sent';
-task.statusText = taskStatusMeta.sent.label;
-task.statusClass = taskStatusMeta.sent.className;
+task.statusKey = 'api'; // 改为API触发的状态标识
+task.statusText = taskStatusMeta.api.label; // 显示"API触发"文本
+task.statusClass = taskStatusMeta.api.className; // 应用API触发的样式
 task.actionType = 'detail';
 }
 
@@ -1145,6 +1161,11 @@ taskSearchInput.addEventListener('input', resetTaskPageAndRender);
 
 if (drugFilter) {
 drugFilter.addEventListener('change', resetTaskPageAndRender);
+}
+
+// 新增状态筛选事件监听
+if (statusFilter) {
+  statusFilter.addEventListener('change', resetTaskPageAndRender);
 }
 
 if (timeFilter) {
