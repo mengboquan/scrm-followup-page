@@ -158,7 +158,8 @@ background-color: rgba(17, 24, 39, 0.45);
 <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">微信昵称/ID</th>
 <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">手机号码</th>
 <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">消息发送时间</th>
-<th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">随访消息状态</th>
+<th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">随访专员</th>
+<th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">随访状态</th>
 <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">操作</th>
 </tr>
 </thead>
@@ -1076,6 +1077,7 @@ return `
 <td class="px-6 py-4 text-sm text-gray-500">${task.wechatNickname} / ${task.wechatId}</td>
 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${task.mobile}</td>
 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${task.sendTime}</td>
+<td class="px-6 py-3 whitespace-nowrap text-sm text-gray-500">${task.staffName}</td>
 <td class="px-6 py-4 whitespace-nowrap">
 <span class="status-badge ${task.statusClass}">${task.statusText}</span>
 </td>
