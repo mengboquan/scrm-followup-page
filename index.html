@@ -287,7 +287,7 @@ background-color: rgba(17, 24, 39, 0.45);
 <button class="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg !rounded-button whitespace-nowrap transition-colors">
 导出报表
 </button>
-</div>-->
+</div> -->
 </div>
 </div>
 </main>
@@ -306,6 +306,18 @@ background-color: rgba(17, 24, 39, 0.45);
 <div>
 <div class="text-sm text-gray-500 mb-1">链接地址</div>
 <a id="detail-modal-link" href="#" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:text-blue-800 break-all underline"></a>
+</div>
+<div>
+<div class="text-sm text-gray-500 mb-1">API触发</div>
+<div id="detail-modal-api-time" class="text-base font-medium text-gray-900 break-all"></div>
+</div>
+<div>
+<div class="text-sm text-gray-500 mb-1">触达时间</div>
+<div id="detail-modal-reach-time" class="text-base font-medium text-gray-900 break-all"></div>
+</div>
+<div>
+<div class="text-sm text-gray-500 mb-1">患者学习</div>
+<div id="detail-modal-study-time" class="text-base font-medium text-gray-900 break-all"></div>
 </div>
 </div>
 <div class="px-6 py-4 bg-gray-50 border-t border-gray-200 flex justify-end">
@@ -363,6 +375,7 @@ const droppedTaskLimit = 13;
 const dailyUnreadTaskRange = { min: 2, max: 5 };
 const statsMinDate = '2026-04-01';
 const statsMaxDate = '2026-04-17';
+const unifiedDetailUrl = 'https://qnyk.qnzjzk.cn/h5/pages/login/login?hType=100&unitCredit=1&dataId=1242176343479681024&id=2047597765270118402&triggerTime=20';
 const drugColors = {
 '健脾生血片': '#EF4444',
 '健脾生血颗粒': '#8B5CF6',
@@ -497,6 +510,30 @@ function formatDateValue(dateObject) {
 return `${dateObject.getFullYear()}-${pad(dateObject.getMonth() + 1)}-${pad(dateObject.getDate())}`;
 }
 
+function formatDateTime(dateObject) {
+return `${dateObject.getFullYear()}/${pad(dateObject.getMonth() + 1)}/${pad(dateObject.getDate())} ${pad(dateObject.getHours())}:${pad(dateObject.getMinutes())}:${pad(dateObject.getSeconds())}`;
+}
+
+function formatDateTimeWithoutSeconds(dateObject) {
+return `${dateObject.getFullYear()}/${pad(dateObject.getMonth() + 1)}/${pad(dateObject.getDate())} ${pad(dateObject.getHours())}:${pad(dateObject.getMinutes())}`;
+}
+
+function addSeconds(dateObject, seconds) {
+return new Date(dateObject.getTime() + seconds * 1000);
+}
+
+function buildTaskDetailTimes(day, hour, minute) {
+const apiTriggerDate = new Date(2026, 3, day, hour, minute, randomInt(0, 29));
+const reachDate = addSeconds(apiTriggerDate, randomInt(60, 900));
+const studyDate = addSeconds(reachDate, randomInt(180, 5400));
+return {
+apiTriggerTime: formatDateTime(apiTriggerDate),
+reachTime: formatDateTime(reachDate),
+studyTime: formatDateTime(studyDate),
+tableSendTime: formatDateTimeWithoutSeconds(apiTriggerDate)
+};
+}
+
 function shiftDateValue(dateValue, dayOffset) {
 const dateObject = parseDateValue(dateValue);
 dateObject.setDate(dateObject.getDate() + dayOffset);
@@ -523,6 +560,7 @@ const dailyStaffPool = buildBalancedSequence(statsStaffs, dailyCount);
 for (let dailyIndex = 0; dailyIndex < dailyCount; dailyIndex += 1) {
 const hour = 9;
 const minute = randomInt(0,1);
+const detailTimes = buildTaskDetailTimes(day, hour, minute);
 const drugName = dailyDrugPool[dailyIndex];
 const courseDay = randomInt(1, 21);
 const nickname = `${pickRandom(nicknameRoots)}${pad(randomInt(1, 99))}`;
@@ -536,7 +574,7 @@ courseText: `第 ${courseDay} 天`,
 wechatNickname: nickname,
 wechatId,
 mobile: buildTaskMobile(sequence),
-sendTime: `2026/04/${pad(day)} ${pad(hour)}:${pad(minute)}`,
+sendTime: detailTimes.tableSendTime,
 sendTimeValue: `2026-04-${pad(day)}`,
 staffName: dailyStaffPool[dailyIndex],
 statusKey,
@@ -544,7 +582,10 @@ statusText: statusMeta.label,
 statusClass: statusMeta.className,
 actionType: statusKey === 'dropped' ? 'retry' : 'detail',
 detailTitle: `${drugName}${courseDay}天随访详情`,
-detailUrl: `https://demo.example.com/followup/task/${3000 + sequence}`,
+detailUrl: unifiedDetailUrl,
+detailApiTriggerTime: detailTimes.apiTriggerTime,
+detailReachTime: detailTimes.reachTime,
+detailPatientStudyTime: detailTimes.studyTime,
 checked: false,
 loading: false
 });
@@ -661,7 +702,7 @@ return b.date.localeCompare(a.date) || b.totalCount - a.totalCount || a.drugName
 return Object.assign({
 id: index + 1,
 detailTitle: `${row.drugName} ${row.date} ${row.staffName} 执行详情`,
-detailUrl: `https://demo.example.com/followup/stats/${6000 + index + 1}`
+detailUrl: unifiedDetailUrl
 }, row);
 });
 }
@@ -1044,7 +1085,7 @@ return '<button type="button" class="task-row-action bg-red-600 hover:bg-red-700
 if (task.actionType === 'send') {
 return '<button type="button" class="task-row-action bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg !rounded-button whitespace-nowrap transition-colors" data-action="send">发送</button>';
 }
-return `<button type="button" class="task-detail-btn bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg !rounded-button whitespace-nowrap transition-colors" data-title="${task.detailTitle}" data-url="${task.detailUrl}">查看详情</button>`;
+return `<button type="button" class="task-detail-btn bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg !rounded-button whitespace-nowrap transition-colors" data-task-id="${task.id}">查看详情</button>`;
 }
 
 function renderTaskTable() {
@@ -1095,12 +1136,18 @@ syncSelectionState();
 }
 
 function markTaskAsSent(task) {
+const now = new Date();
 task.loading = false;
 task.checked = false;
 task.statusKey = 'api'; // 改为API触发的状态标识
 task.statusText = taskStatusMeta.api.label; // 显示"API触发"文本
 task.statusClass = taskStatusMeta.api.className; // 应用API触发的样式
 task.actionType = 'detail';
+task.sendTime = formatDateTimeWithoutSeconds(now);
+task.detailUrl = unifiedDetailUrl;
+task.detailApiTriggerTime = formatDateTime(now);
+task.detailReachTime = formatDateTime(addSeconds(now, 300));
+task.detailPatientStudyTime = formatDateTime(addSeconds(now, 1800));
 }
 
 function sendSingleTask(taskId) {
@@ -1259,7 +1306,19 @@ syncSelectionState();
 taskTableBody.addEventListener('click', function(event) {
 const detailButton = event.target.closest('.task-detail-btn');
 if (detailButton) {
-openDetailModal(detailButton.dataset.title || '随访消息详情', detailButton.dataset.url || '#');
+const taskId = Number(detailButton.dataset.taskId);
+const task = taskList.find(function(item) {
+return item.id === taskId;
+});
+if (task) {
+openDetailModal({
+title: task.detailTitle || '随访消息详情',
+url: task.detailUrl || unifiedDetailUrl,
+apiTriggerTime: task.detailApiTriggerTime || '--',
+reachTime: task.detailReachTime || '--',
+studyTime: task.detailPatientStudyTime || '--'
+});
+}
 return;
 }
 const actionButton = event.target.closest('.task-row-action');
@@ -1280,13 +1339,31 @@ batchSendButton.addEventListener('click', batchSendSelectedTasks);
 const detailModal = document.getElementById('detail-modal');
 const detailModalTitle = document.getElementById('detail-modal-title');
 const detailModalLink = document.getElementById('detail-modal-link');
+const detailModalApiTime = document.getElementById('detail-modal-api-time');
+const detailModalReachTime = document.getElementById('detail-modal-reach-time');
+const detailModalStudyTime = document.getElementById('detail-modal-study-time');
 const detailModalClose = document.getElementById('detail-modal-close');
 const detailModalConfirm = document.getElementById('detail-modal-confirm');
 
-function openDetailModal(title, url) {
-detailModalTitle.textContent = title;
-detailModalLink.textContent = url;
-detailModalLink.href = url;
+function buildStatsDetailData(row) {
+const sourceTask = row && row.sourceTasks && row.sourceTasks.length ? row.sourceTasks[0] : null;
+return {
+title: row && row.detailTitle ? row.detailTitle : '随访详情',
+url: unifiedDetailUrl,
+apiTriggerTime: sourceTask && sourceTask.detailApiTriggerTime ? sourceTask.detailApiTriggerTime : '--',
+reachTime: sourceTask && sourceTask.detailReachTime ? sourceTask.detailReachTime : '--',
+studyTime: sourceTask && sourceTask.detailPatientStudyTime ? sourceTask.detailPatientStudyTime : '--'
+};
+}
+
+function openDetailModal(detailData) {
+const safeDetail = detailData || {};
+detailModalTitle.textContent = safeDetail.title || '随访详情';
+detailModalLink.textContent = safeDetail.url || unifiedDetailUrl;
+detailModalLink.href = safeDetail.url || unifiedDetailUrl;
+detailModalApiTime.textContent = safeDetail.apiTriggerTime || '--';
+detailModalReachTime.textContent = safeDetail.reachTime || '--';
+detailModalStudyTime.textContent = safeDetail.studyTime || '--';
 detailModal.classList.remove('hidden');
 detailModal.classList.add('flex');
 }
@@ -1434,7 +1511,7 @@ const row = statsDetailRows.find(function(item) {
 return item.id === Number(detailButton.dataset.rowId);
 });
 if (row) {
-openDetailModal(row.detailTitle, row.detailUrl);
+openDetailModal(buildStatsDetailData(row));
 }
 }
 });
